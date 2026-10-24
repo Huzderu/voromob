@@ -21,6 +21,10 @@
   d.querySelectorAll("video[data-autoplay]").forEach((video) => {
     const button = d.querySelector(`[data-video-toggle][aria-controls="${video.id}"]`);
     let userPaused = reduceMotion;
+    // the hero keeps its first-frame picture visible until the video has a frame of its own (CSS .has-frame)
+    const hasFrame = () => video.classList.add("has-frame");
+    if (video.readyState >= 2) hasFrame();
+    else video.addEventListener("loadeddata", hasFrame, { once: true });
     const sync = () => button && button.classList.toggle("is-paused", video.paused);
     video.addEventListener("play", sync);
     video.addEventListener("pause", sync);

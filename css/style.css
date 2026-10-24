@@ -6,7 +6,7 @@
 /* VoroMob – one stylesheet for all pages.
    Palette from the logo: black ground, pale gold line drawing (#E4E6C1), warm white wordmark (#F1EBEF).
    Light pages use a warm paper tone for reading; --bronze is the logo gold darkened to 5.6:1 on --paper.
-   One recurring motif: a thin gold line (eyebrows, step markers, framed hero photo, kitchen line drawing in the CTA). */
+   One recurring motif: a thin gold line (eyebrows, step markers, kitchen line drawing in the CTA). */
 
 :root {
   --ink: #141413;
@@ -186,9 +186,25 @@ a:hover > .link-arrow .arrow, .link-arrow:hover .arrow { transform: translateX(3
   .nav-cta { align-self: flex-start; }
 }
 
-/* ---------- hero ---------- */
-.hero { padding: clamp(3rem, 7vw, 6rem) 0 clamp(4.5rem, 9vw, 7.5rem); overflow: hidden; }
-.hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(2.5rem, 6vw, 6rem); align-items: center; }
+/* ---------- hero: text over a looping background video (first frame as picture until it plays) ---------- */
+.hero {
+  position: relative; isolation: isolate; display: grid; align-items: center; overflow: hidden;
+  min-height: min(calc(100svh - var(--header-h)), 58rem);
+  padding: clamp(3rem, 7vw, 6rem) 0 clamp(4.5rem, 9vw, 7.5rem);
+}
+.hero-grid { display: grid; grid-template-columns: minmax(0, 37rem); }
+.hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; background: var(--ink); }
+.hero-bg img, .hero-bg video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 65% 50%; }
+/* some browsers paint an empty video black or with a play symbol (iOS power saving); main.js adds .has-frame.
+   Without scripts the video never plays, so the picture of its first frame is all there is to see anyway. */
+.hero-bg video:not(.has-frame) { opacity: 0; }
+/* Dark behind the text column (it ends at --text-end: the .wrap edge plus 37rem), fading out over the video beside
+   it, and at the foot. At .88 even the brightest video pixels stay dark enough for the grey lead (4.5:1). */
+.hero-bg::after { content: ""; position: absolute; inset: 0;
+  --text-end: calc(max(var(--gutter), (100% - var(--wrap)) / 2) + 37rem);
+  background: linear-gradient(90deg, rgba(20,20,19,.92) 0, rgba(20,20,19,.88) var(--text-end), rgba(20,20,19,.3) calc(var(--text-end) + 18rem), rgba(20,20,19,.2) 100%),
+              linear-gradient(0deg, rgba(20,20,19,.85) 0%, rgba(20,20,19,0) 28%); }
+.hero .video-toggle { top: auto; bottom: 1.25rem; right: var(--gutter); }
 .hero h1 { margin-bottom: 1.5rem; }
 .hero h1 .accent { display: block; }
 .hero .lead { color: var(--muted-dark); }
@@ -202,17 +218,22 @@ a:hover > .link-arrow .arrow, .link-arrow:hover .arrow { transform: translateX(3
   content: ""; width: .8rem; height: .42rem; margin-top: -.2rem;
   border-left: 1.5px solid var(--gold); border-bottom: 1.5px solid var(--gold); transform: rotate(-45deg);
 }
-.framed { position: relative; }
-.framed::before {
-  content: ""; position: absolute; inset: 1.4rem -1.4rem -1.4rem 1.4rem;
-  border: 1px solid var(--gold-line); pointer-events: none;
-}
-.hero-media img { position: relative; width: 100%; aspect-ratio: 4 / 4.6; object-fit: cover; }
-
-@media (max-width: 960px) {
-  .hero-grid { grid-template-columns: 1fr; }
-  .hero-media { margin-right: 1.4rem; }
-  .hero-media img { aspect-ratio: 4 / 3.6; }
+/* Portrait screens: the upright video fills the first screen with eyebrow, heading and buttons at its foot;
+   the lead and the facts follow below it, so the text does not cover the workers. */
+@media (max-aspect-ratio: 4/5) {
+  .hero { min-height: 0; padding: 0 0 clamp(3rem, 10vw, 4.5rem); align-items: end;
+    grid-template-columns: var(--gutter) minmax(0, 1fr) var(--gutter); grid-template-rows: 1fr auto auto auto auto; }
+  .hero-bg { position: relative; grid-column: 1 / -1; grid-row: 1 / 4; z-index: 0; height: min(calc(100svh - var(--header-h)), 52rem); }
+  .hero-bg img, .hero-bg video { object-position: 50% 100%; }
+  .hero-bg::after { background: linear-gradient(180deg, rgba(20,20,19,.35) 0%, rgba(20,20,19,0) 25%, rgba(20,20,19,0) 50%, rgba(20,20,19,.88) 78%, var(--ink) 100%); }
+  .hero-grid, .hero-text { display: contents; }
+  .hero-text > * { grid-column: 2; position: relative; z-index: 1; }
+  .hero .eyebrow { grid-row: 1; align-self: end; }
+  .hero h1 { grid-row: 2; }
+  .hero .actions { grid-row: 3; margin: 0 0 1.75rem; }
+  .hero .lead { grid-row: 4; margin-top: 1.25rem; }
+  .hero .facts { grid-row: 5; margin-top: 1.5rem; }
+  .hero .video-toggle { top: .75rem; bottom: auto; }
 }
 
 /* ---------- sections ---------- */
