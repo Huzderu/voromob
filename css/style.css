@@ -320,6 +320,19 @@ a:hover > .link-arrow .arrow, .link-arrow:hover .arrow { transform: translateX(3
   .mosaic { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 13rem; }
 }
 
+/* ---------- partners (names only: the owner sent no logos) ---------- */
+.partners {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 3rem;
+  margin-top: clamp(3rem, 6vw, 4.5rem); padding-top: clamp(2rem, 4vw, 2.75rem); border-top: 1px solid var(--gold-line);
+}
+.partners .eyebrow { margin: 0; }
+.partners-list { list-style: none; display: flex; flex-wrap: wrap; gap: .9rem 2.75rem; }
+.partners-list li { font: 400 clamp(1.1rem, 1.7vw, 1.35rem)/1.3 var(--display); letter-spacing: .03em; color: var(--cream); }
+/* below 780 px the four names no longer fit one row (3 + 1 looks broken): two columns while the longest name
+   (Astorium Residence, 163 px) fits on one line, then one */
+@media (max-width: 780px) { .partners-list { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem 1.25rem; } }
+@media (max-width: 385px) { .partners-list { grid-template-columns: 1fr; gap: .6rem; } }
+
 /* ---------- checks list ---------- */
 .checks { list-style: none; display: grid; gap: 1.25rem; margin-top: 1.75rem; max-width: 36rem; }
 .checks li { position: relative; padding-left: 2.1rem; color: var(--muted); }
